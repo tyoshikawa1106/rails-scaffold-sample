@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-ScaffoldApp::Application.config.secret_key_base = 'be0a6b3c26b1340bcdb7216ce3e502ddec5a4609a3f99eae63e97e9f23e85932cff94758f4562bf5a3d4cd7197f8381599123dc67217c0192015f0a9258b9b92'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+BootstrapApp::Application.config.secret_key_base = secure_token
